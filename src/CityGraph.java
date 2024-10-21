@@ -49,13 +49,13 @@ class UCS {
     public void findWay(String start, String goal) {
         LinkedList<String> notCheckList = new LinkedList<>(); 
         HashMap<String, Integer> costMap = new HashMap<>(); 
-        HashMap<String, String> pathMap = new HashMap<>(); 
+        HashMap<String, String> wayMap = new HashMap<>(); 
 
         notCheckList.add(start);
         costMap.put(start, 0);
-        pathMap.put(start, null);
+        wayMap.put(start, null);
 
-        String bestGoalPath = null;
+        String bestGoalWay = null;
         int bestGoalCost = Integer.MAX_VALUE;
 
         // Find the city with the lowest cost
@@ -79,9 +79,29 @@ class UCS {
             if (currentCity.equals(goal)) {
                 if (currentCost < bestGoalCost) {
                     bestGoalCost = currentCost;
-                    bestGoalPath = currentCity;
+                    bestGoalWay = currentCity;
                 }
             }
+
+            notCheckList.remove(currentCity);
+
+            for (Edge edge : graph.adjList.get(currentCity)) {
+                int newCost = currentCost + edge.distance;
+
+                Integer oldCost = costMap.get(edge.destination);
+                if (oldCost == null || newCost < oldCost) {
+                    costMap.put(edge.destination, newCost);
+                    notCheckList.add(edge.destination);
+                    wayMap.put(edge.destination, currentCity);
+                }
+            }
+        }
+
+        if (bestGoalWay != null) {
+            printWay(wayMap, start, goal);
+            System.out.println("Best way cost: " + bestGoalCost);
+        } else {
+            System.out.println("No way found from " + start + " to " + goal);
         }
     }
 }
