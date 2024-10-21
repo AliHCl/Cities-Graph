@@ -74,6 +74,15 @@ class UCS {
             if (currentCity == null) {
                 break;
             }
+            
+            // Goal test 
+            if (currentCity.equals(goal)) {
+                if (currentCost < bestGoalCost) {
+                    bestGoalCost = currentCost;
+                    bestGoalPath = currentCity;
+                }
+            }
+        }
     }
 }
 
