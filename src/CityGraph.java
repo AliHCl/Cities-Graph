@@ -44,6 +44,37 @@ class UCS {
     public UCS(Graph graph) {
         this.graph = graph;
     }
+
+    // Find the way from the start city to the goal city
+    public void findWay(String start, String goal) {
+        LinkedList<String> notCheckList = new LinkedList<>(); 
+        HashMap<String, Integer> costMap = new HashMap<>(); 
+        HashMap<String, String> pathMap = new HashMap<>(); 
+
+        notCheckList.add(start);
+        costMap.put(start, 0);
+        pathMap.put(start, null);
+
+        String bestGoalPath = null;
+        int bestGoalCost = Integer.MAX_VALUE;
+
+        // Find the city with the lowest cost
+        while (!notCheckList.isEmpty()) {
+            String currentCity = null;
+            int currentCost = Integer.MAX_VALUE;
+
+            for (String city : notCheckList) {
+                int cost = costMap.get(city);
+                if (cost < currentCost) {
+                    currentCost = cost;
+                    currentCity = city;
+                }
+            }
+
+            if (currentCity == null) {
+                break;
+            }
+    }
 }
 
 public class CityGraph {
