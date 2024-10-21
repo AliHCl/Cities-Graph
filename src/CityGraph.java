@@ -14,7 +14,12 @@ class Graph {
     }
 
     // Method to add an edge (connection) between two cities with a specified distance
-    void addEdge(String city1, String city2, int distance) {
+    void addEdge(String city1, String city2, int distance) throws IllegalArgumentException {
+        // Check if the edge already exists
+        if (edgeExists(city1, city2)) {
+            throw new IllegalArgumentException("Edge already exists: " + city1 + " - " + city2);
+        }
+
         // If city1 is not already in adjList, initialize it with a new LinkedList.
         adjList.putIfAbsent(city1, new LinkedList<>());
         // If city2 is not already in adjList, initialize it with a new LinkedList.
@@ -23,8 +28,18 @@ class Graph {
         // Add a new edge to the adjacency list for city1 pointing to city2 with the given distance.
         adjList.get(city1).add(new Edge(city2, distance));
         // Add a new edge to the adjacency list for city2 pointing back to city1 with the same distance.
-        // This ensures the graph is bidirectional.
         adjList.get(city2).add(new Edge(city1, distance));
+    }
+
+    private boolean edgeExists(String city1, String city2) {
+        if (adjList.containsKey(city1)) {
+            for (Edge edge : adjList.get(city1)) {
+                if (edge.destination.equals(city2)) {
+                    return true; // Edge already exists
+                }
+            }
+        }
+        return false; // Edge does not exist
     }
 
     // Method to display the structure of the graph (cities and their connections)
@@ -98,10 +113,13 @@ public class CityGraph {
                 continue; // Continue to the next iteration for valid input
             }
 
-            // Add an edge between the two cities to the graph
-            graph.addEdge(city1, city2, distance);
-            // Confirmation message indicating the edge has been added
-            System.out.println("Edge added: " + city1 + " - " + city2 + " (" + distance + " km)");
+            // Try to add the edge, catching any exceptions if the edge already exists
+            try {
+                graph.addEdge(city1, city2, distance);
+                System.out.println("Edge added: " + city1 + " - " + city2 + " (" + distance + " km)");
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage()); // Print the exception message
+            }
         }
 
         // Display the graph after the user has finished entering data
