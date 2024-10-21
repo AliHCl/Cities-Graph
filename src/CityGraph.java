@@ -42,20 +42,6 @@ class Graph {
         return false; // Edge does not exist
     }
 
-    // Method to display the structure of the graph (cities and their connections)
-    void displayGraph() {
-        // For each city in the adjacency list:
-        for (String city : adjList.keySet()) {
-            System.out.print(city + " is connected to: ");
-            // For each edge in the city’s adjacency list:
-            for (Edge edge : adjList.get(city)) {
-                // Display the destination city and the distance (e.g., Tehran (200 km))
-                System.out.print(edge.destination + " (" + edge.distance + " km), ");
-            }
-            // Start a new line for the next city.
-            System.out.println();
-        }
-    }
 }
 
 // Edge class to represent a connection from one city to another with a specified distance
@@ -123,7 +109,6 @@ public class CityGraph {
         }
 
         // Display the graph after the user has finished entering data
-        System.out.println("\nGraph connections:");
-        graph.displayGraph();
+        System.out.println("Cities and Edges added Successfully");
     }
 }
