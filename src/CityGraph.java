@@ -104,6 +104,18 @@ class UCS {
             System.out.println("No way found from " + start + " to " + goal);
         }
     }
+
+    private void printWay(HashMap<String, String> wayMap, String start, String goal) {
+        LinkedList<String> way = new LinkedList<>();
+        String city = goal;
+
+        while (city != null) {
+            way.addFirst(city);
+            city = wayMap.get(city);
+        }
+
+        System.out.println("Way: " + String.join(" --> ", way));
+    }
 }
 
 public class CityGraph {
