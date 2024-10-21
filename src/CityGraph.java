@@ -38,6 +38,14 @@ class Edge {
     }
 }
 
+class UCS {
+    private Graph graph;
+
+    public UCS(Graph graph) {
+        this.graph = graph;
+    }
+}
+
 public class CityGraph {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
