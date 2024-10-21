@@ -108,7 +108,7 @@ public class CityGraph {
             }
         }
 
-        // Display the graph after the user has finished entering data
+        // Print a final message in Console
         System.out.println("Cities and Edges added Successfully");
     }
 }
