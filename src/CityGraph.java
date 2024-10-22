@@ -183,18 +183,21 @@ class UCS {
      * Prompts the user to enter the start and goal cities, and then runs UCS to find the path.
      */
     public void runUCS() {
-        Scanner scanner = new Scanner(System.in);
+         // Get all cities from the graph's adjacency list
+         LinkedList<String> cities = new LinkedList<>(graph.adjList.keySet());
 
-        // Prompt the user for the start city
-        System.out.println("Enter the start city:");
-        String start = scanner.nextLine();
-
-        // Prompt the user for the goal city
-        System.out.println("Enter the goal city:");
-        String goal = scanner.nextLine();
-
-        // Run the UCS algorithm to find the path
-        findWay(start, goal);
+         // Check all pairs of cities
+         for (int i = 0; i < cities.size(); i++) {
+             for (int j = i + 1; j < cities.size(); j++) {
+                 String start = cities.get(i);
+                 String goal = cities.get(j);
+ 
+                 // Run UCS to find the shortest path between each pair
+                 System.out.println("Finding path between " + start + " and " + goal + ":");
+                 findWay(start, goal);
+                 System.out.println("------------------------");
+             }
+         }
     }
 }
 
