@@ -135,6 +135,19 @@ class UCS {
 
         System.out.println("Way: " + String.join(" --> ", way));
     }
+
+    // run UCS and get city input from user
+    public void runUCS() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter the start city:");
+        String start = scanner.nextLine();
+
+        System.out.println("Enter the goal city:");
+        String goal = scanner.nextLine();
+
+        findWay(start, goal);
+    }
 }
 
 public class CityGraph {
@@ -189,5 +202,9 @@ public class CityGraph {
 
         // Print a final message in Console
         System.out.println("Cities and Edges added Successfully");
+
+        // Start UCS after adding all edges
+        UCS ucs = new UCS(graph);
+        ucs.runUCS(); // Run UCS to get start and goal cities and find the optimal path
     }
 }
