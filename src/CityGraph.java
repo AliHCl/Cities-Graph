@@ -2,86 +2,115 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Scanner;
 
-// Graph class for representing and managing the graph (cities and their connections)
+/**
+ * The Graph class represents a collection of cities and their connections (edges).
+ * Each city is represented as a key in the adjacency list, and its value is a list of edges
+ * that indicate other cities connected to it and the distance between them.
+ */
 class Graph {
     // adjList is a HashMap where the key is the name of the cities (String)
-    // and the value is a list of edges (LinkedList<Edge>) that represent connections.
+    // and the value is a list of edges (LinkedList<Edge>) that represent connections to other cities.
     HashMap<String, LinkedList<Edge>> adjList;
 
-    // Constructor for the Graph class that initializes the adjList.
+    // Constructor that initializes the adjacency list to store cities and their edges.
     public Graph() {
         adjList = new HashMap<>();
     }
 
-    // Method to add an edge (connection) between two cities with a specified distance
+    /**
+     * Adds a two-way connection (edge) between two cities with a specified distance.
+     * Throws an exception if the edge already exists.
+     *
+     * @param city1    the name of the first city
+     * @param city2    the name of the second city
+     * @param distance the distance between the two cities
+     * @throws IllegalArgumentException if the edge already exists between the two cities
+     */
     void addEdge(String city1, String city2, int distance) throws IllegalArgumentException {
-        // Check if the edge already exists
+        // Check if the connection (edge) already exists between the cities
         if (edgeExists(city1, city2)) {
             throw new IllegalArgumentException("Edge already exists: " + city1 + " - " + city2);
         }
 
-        // If city1 is not already in adjList, initialize it with a new LinkedList.
+        // Ensure both cities are in the adjacency list before adding the edge
         adjList.putIfAbsent(city1, new LinkedList<>());
-        // If city2 is not already in adjList, initialize it with a new LinkedList.
         adjList.putIfAbsent(city2, new LinkedList<>());
 
-        // Add a new edge to the adjacency list for city1 pointing to city2 with the given distance.
+        // Add an edge from city1 to city2 and from city2 to city1 (since the graph is undirected)
         adjList.get(city1).add(new Edge(city2, distance));
-        // Add a new edge to the adjacency list for city2 pointing back to city1 with the same distance.
         adjList.get(city2).add(new Edge(city1, distance));
     }
 
+    /**
+     * Checks whether an edge already exists between two cities.
+     *
+     * @param city1 the first city
+     * @param city2 the second city
+     * @return true if an edge exists, false otherwise
+     */
     private boolean edgeExists(String city1, String city2) {
         if (adjList.containsKey(city1)) {
             for (Edge edge : adjList.get(city1)) {
                 if (edge.destination.equals(city2)) {
-                    return true; // Edge already exists
+                    return true; // Edge found between the two cities
                 }
             }
         }
-        return false; // Edge does not exist
+        return false; // No edge found
     }
-
 }
 
-// Edge class to represent a connection from one city to another with a specified distance
+/**
+ * The Edge class represents a connection from one city to another with a specific distance.
+ */
 class Edge {
-    // Destination (the name of the other city) and the distance between the two cities
-    String destination;
-    int distance;
+    String destination; // The destination city
+    int distance;       // The distance to the destination city
 
-    // Constructor for the Edge class that initializes the destination and distance.
+    // Constructor for the Edge class to initialize the destination and distance
     public Edge(String destination, int distance) {
         this.destination = destination;
         this.distance = distance;
     }
 }
 
+/**
+ * The UCS (Uniform Cost Search) class performs the search algorithm to find the shortest path between two cities.
+ */
 class UCS {
     private Graph graph;
 
+    // Constructor to initialize UCS with a specific graph (set of cities and edges)
     public UCS(Graph graph) {
         this.graph = graph;
     }
 
-    // Find the way from the start city to the goal city
+    /**
+     * Finds the shortest path between the start city and the goal city using the UCS algorithm.
+     * Prints the path and the total cost if found, otherwise informs the user that no path exists.
+     *
+     * @param start the starting city
+     * @param goal  the goal city
+     */
     public void findWay(String start, String goal) {
-        LinkedList<String> notCheckList = new LinkedList<>(); 
-        HashMap<String, Integer> costMap = new HashMap<>(); 
-        HashMap<String, String> wayMap = new HashMap<>(); 
+        LinkedList<String> notCheckList = new LinkedList<>();  // Cities yet to be checked
+        HashMap<String, Integer> costMap = new HashMap<>();    // Stores the minimum cost to reach each city
+        HashMap<String, String> wayMap = new HashMap<>();      // Keeps track of the path (previous city for each city)
 
+        // Initialize the starting city
         notCheckList.add(start);
         costMap.put(start, 0);
         wayMap.put(start, null);
 
-        String bestGoalWay = null;
-        int bestGoalCost = Integer.MAX_VALUE;
+        String bestGoalWay = null; // Variable to store the best way (if found)
+        int bestGoalCost = Integer.MAX_VALUE; // Variable to store the lowest cost to the goal
 
-        // Find the city with the lowest cost
+        // Main loop to explore the graph and find the shortest path
         while (!notCheckList.isEmpty()) {
             String currentCity = null;
             int currentCost = Integer.MAX_VALUE;
 
+            // Find the city with the lowest cost from the cities yet to be checked
             for (String city : notCheckList) {
                 int cost = costMap.get(city);
                 if (cost < currentCost) {
@@ -90,11 +119,12 @@ class UCS {
                 }
             }
 
+            // If no city is found, break out of the loop
             if (currentCity == null) {
                 break;
             }
-            
-            // Goal test 
+
+            // Check if the current city is the goal and update the best path if necessary
             if (currentCity.equals(goal)) {
                 if (currentCost < bestGoalCost) {
                     bestGoalCost = currentCost;
@@ -102,8 +132,10 @@ class UCS {
                 }
             }
 
+            // Remove the current city from the list of cities to be checked
             notCheckList.remove(currentCity);
 
+            // Explore all neighboring cities and update their costs if a better path is found
             for (Edge edge : graph.adjList.get(currentCity)) {
                 int newCost = currentCost + edge.distance;
 
@@ -116,6 +148,7 @@ class UCS {
             }
         }
 
+        // If a path to the goal was found, print the path and its cost, otherwise inform the user no path was found
         if (bestGoalWay != null) {
             printWay(wayMap, start, goal);
             System.out.println("Best way cost: " + bestGoalCost);
@@ -124,87 +157,100 @@ class UCS {
         }
     }
 
+    /**
+     * Helper method to print the path from the start city to the goal city.
+     * It reconstructs the path using the wayMap.
+     *
+     * @param wayMap the map that stores the previous city for each city in the path
+     * @param start  the starting city
+     * @param goal   the goal city
+     */
     private void printWay(HashMap<String, String> wayMap, String start, String goal) {
         LinkedList<String> way = new LinkedList<>();
         String city = goal;
 
+        // Reconstruct the path by following the wayMap from the goal to the start
         while (city != null) {
             way.addFirst(city);
             city = wayMap.get(city);
         }
 
+        // Print the path in the format "city1 --> city2 --> ... --> goal"
         System.out.println("Way: " + String.join(" --> ", way));
     }
 
-    // run UCS and get city input from user
+    /**
+     * Prompts the user to enter the start and goal cities, and then runs UCS to find the path.
+     */
     public void runUCS() {
         Scanner scanner = new Scanner(System.in);
 
+        // Prompt the user for the start city
         System.out.println("Enter the start city:");
         String start = scanner.nextLine();
 
+        // Prompt the user for the goal city
         System.out.println("Enter the goal city:");
         String goal = scanner.nextLine();
 
+        // Run the UCS algorithm to find the path
         findWay(start, goal);
     }
 }
 
+/**
+ * The main class that manages the input of cities and edges from the user,
+ * builds the graph, and then runs the UCS algorithm to find the shortest path.
+ */
 public class CityGraph {
     public static void main(String[] args) {
-        // Create a scanner to receive user input
+        // Create a scanner to receive user input for city connections
         Scanner scanner = new Scanner(System.in);
-        // Create an instance of the Graph class to store the city graph
-        Graph graph = new Graph();
+        Graph graph = new Graph(); // Create a new graph to store cities and edges
 
-        // Initial message to guide the user for entering data
         System.out.println("Enter city connections or type 'exit' to stop:");
 
-        // Loop to receive inputs from the user until 'exit' is entered
+        // Loop to receive input of city connections until 'exit' is entered
         while (true) {
-            // Read a line of input from the user
             String input = scanner.nextLine();
 
-            // If the user enters 'exit', break out of the loop.
+            // Exit the loop if the user types "exit"
             if (input.equalsIgnoreCase("exit")) {
                 break;
             }
 
-            // Split the input into three parts: city1, city2, and distance
+            // Parse the input to extract city1, city2, and distance
             String[] parts = input.split(" ");
-            // Check if the input contains exactly three parts
             if (parts.length != 3) {
                 System.out.println("Invalid input. Please enter in format: city1 city2 distance");
-                continue; // Continue to the next iteration for valid input
+                continue;
             }
 
-            // Retrieve the city names and distance from the input
             String city1 = parts[0];
             String city2 = parts[1];
             int distance;
 
-            // Convert the third part of the input to an integer and validate it
+            // Convert the distance to an integer and check for input validity
             try {
                 distance = Integer.parseInt(parts[2]);
             } catch (NumberFormatException e) {
                 System.out.println("Invalid distance. Please enter a valid number for distance.");
-                continue; // Continue to the next iteration for valid input
+                continue;
             }
 
-            // Try to add the edge, catching any exceptions if the edge already exists
+            // Add the edge to the graph, checking for duplicate edges
             try {
                 graph.addEdge(city1, city2, distance);
                 System.out.println("Edge added: " + city1 + " - " + city2 + " (" + distance + " km)");
             } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage()); // Print the exception message
+                System.out.println(e.getMessage());
             }
         }
 
-        // Print a final message in Console
+        // After all cities and edges have been added, run UCS to find the shortest path
         System.out.println("Cities and Edges added Successfully");
 
-        // Start UCS after adding all edges
-        UCS ucs = new UCS(graph);
-        ucs.runUCS(); // Run UCS to get start and goal cities and find the optimal path
+        UCS ucs = new UCS(graph); // Create a UCS instance with the constructed graph
+        ucs.runUCS();             // Run UCS to get user input for start and goal cities
     }
 }
