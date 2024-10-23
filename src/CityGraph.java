@@ -1,6 +1,7 @@
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Scanner;
+import java.io.*;
 
 /**
  * The Graph class represents a collection of cities and their connections (edges).
@@ -201,6 +202,37 @@ class UCS {
     }
 }
 
+class ReadFromFile{
+
+    private Graph graph; 
+    public ReadFromFile(Graph graph) {
+        this.graph = graph;
+    }
+   
+    public void readFile() {
+        try {
+            FileInputStream fis = new FileInputStream("C:\\Users\\Admin\\Desktop\\Cities-Graph\\Road_Cities.txt");
+            BufferedReader bis = new BufferedReader(new InputStreamReader(fis));
+            String i ;
+
+            while ((i = bis.readLine()) != null) {
+                String[] parts = i.split(" ");
+                
+                if (parts.length == 3) {
+                    String city1 = parts[0];
+                    String city2 = parts[1];
+                    int distance = Integer.parseInt(parts[2]);
+                    graph.addEdge(city1, city2, distance);
+                }
+            }
+            bis.close();
+            fis.close();
+        } 
+        catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+}
 /**
  * The main class that manages the input of cities and edges from the user,
  * builds the graph, and then runs the UCS algorithm to find the shortest path.
